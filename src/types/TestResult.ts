@@ -1,4 +1,4 @@
 export default interface TestResult {
-  answers: string
-  testingDate: Date
+  id: number
+  datetime: Date
 }

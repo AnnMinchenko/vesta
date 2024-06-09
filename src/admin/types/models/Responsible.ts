@@ -1,9 +1,9 @@
-export default interface Adult {
+export default interface Responsible {
   id: number
   firstName: string
   lastName: string
   patronymic: string
-  phone: string
-  identityDocument: string
   type: string
+  phoneNumber: string
+  documentId: number
 }

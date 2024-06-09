@@ -12,7 +12,13 @@ import {
   Text,
   useDisclosure
 } from '@chakra-ui/react'
-import { FiCalendar, FiLogOut, FiMenu, FiUsers } from 'react-icons/fi'
+import {
+  FiCalendar,
+  FiLogOut,
+  FiMenu,
+  FiSettings,
+  FiUsers
+} from 'react-icons/fi'
 import { IconType } from 'react-icons'
 import React from 'react'
 import NextLink from 'next/link'
@@ -22,6 +28,7 @@ interface LinkItemProps {
   name: string
   icon: IconType
   href: string
+  roles: string[]
 }
 
 interface NavItemProps extends FlexProps {
@@ -46,11 +53,29 @@ interface SidebarProps extends BoxProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Календарь', icon: FiCalendar, href: '/calendar' },
-  { name: 'Клиенты', icon: FiUsers, href: '/clients' }
+  {
+    name: 'Календарь',
+    icon: FiCalendar,
+    href: '/calendar',
+    roles: ['clientSpecialist', 'specialist']
+  },
+  {
+    name: 'Клиенты',
+    icon: FiUsers,
+    href: '/clients',
+    roles: ['admin', 'clientSpecialist']
+  },
+  {
+    name: 'Админ',
+    icon: FiSettings,
+    href: '/admin',
+    roles: ['admin']
+  }
 ]
 
 const SidebarContent = ({ path, onClose, ...rest }: SidebarProps) => {
+  const authState = useAppSelector(state => state.auth)
+
   return (
     <Box
       transition="3s ease"
@@ -63,11 +88,21 @@ const SidebarContent = ({ path, onClose, ...rest }: SidebarProps) => {
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
       </Flex>
-      {LinkItems.map(link => (
-        <NavItem key={link.name} icon={link.icon} href={link.href} path={path}>
-          {link.name}
-        </NavItem>
-      ))}
+      {LinkItems.map(link => {
+        if (link.roles.includes(authState.role)) {
+          return (
+            <NavItem
+              key={link.name}
+              icon={link.icon}
+              href={link.href}
+              path={path}
+            >
+              {link.name}
+            </NavItem>
+          )
+        }
+        return null
+      })}
     </Box>
   )
 }
@@ -183,7 +218,6 @@ const SidebarWithHeader = ({ path, children }: ContentProps) => {
           <SidebarContent path={path} onClose={onClose} />
         </DrawerContent>
       </Drawer>
-      {/* mobilenav */}
       <MobileNav onOpen={onOpen} />
       <Box ml={{ base: 0, md: 40 }} p="4">
         {children}
